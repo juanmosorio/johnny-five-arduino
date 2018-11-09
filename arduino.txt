@@ -1,0 +1,13 @@
+
+rojo + 5v
+naranja datos p9
+cafe -
+
+-
++
+
+conectar el positov a 5v resitencia 330
+negativo a  -> ground
++ a puerto didgital 9
+
+
