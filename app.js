@@ -1,35 +1,31 @@
 const five = require("johnny-five");
-const { firebaseDatabase } = require('./utils/firebase');
-const io = require('socket.io-client');
+const http = require("http");
+const socket = require("socket.io");
 
-const board = new five.Board();
+const app = http.createServer().listen(4200);
+const io = socket.listen(app);
 
-const socket = io('http://192.168.1.2:3000');
+let servo;
 
-board.on("ready", () => {
-  let ledBlue = new five.Led(13);
+openDoor = data => {
+  console.log('Data: ', data);
+  servo.to(90);
+  setTimeout(() => servo.to(0), 500);
+}
 
-  const servo = new five.Servo(9);
+five.Board().on("ready", () => {
 
-  socket.on('openDoor', () => {
-    console.log('Puerta Abiert');
-  });
-  
-  firebaseDatabase.ref('leds/')
-    .on('value', snapshot => {
-      const { blue, red, yellow } = snapshot.val();
-      try {
-        if (blue) {
-          ledBlue.on();
-          servo.to(90);
-          setTimeout(() => servo.to(0), 1000);
-        } else {
-          ledBlue.off();
-          servo.to(0);
-        }
-      } catch (error) {
-        console.log(error);
-      }
+  servo = new five.Servo(7);
+  servo.to(0);
+
+  io.sockets.on("connection", (client) => {
+    console.log("Socket Connected");
+
+    client.on('openDoor', data => openDoor(data));
+
+    client.on('disconnect', () => {
+      console.log('User disconnected');
     });
 
+  });
 });
