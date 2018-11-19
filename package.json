@@ -10,7 +10,9 @@
   "author": "Juan Martínez",
   "license": "ISC",
   "dependencies": {
+    "firebase": "^5.5.8",
     "johnny-five": "^1.0.0",
+    "onesignal-node": "^2.0.1",
     "socket.io": "^2.1.1"
   }
 }
