@@ -1,6 +1,7 @@
 const five = require("johnny-five");
 const http = require("http");
 const socket = require("socket.io");
+const ip = require('ip');
 
 const { firebaseDatabase } = require('./utils/firebase');
 const { sendNotification } = require('./src/notifications/notifications');
@@ -32,6 +33,8 @@ const closeDoor = (data) => {
 
 board.on("ready", () => {
 
+  console.log(ip.address());
+
   let button = new five.Button(2);
   led = new five.Led(13);
   // let servo = new five.Servo(7);
@@ -60,6 +63,8 @@ board.on("ready", () => {
 
   io.sockets.on("connection", (client) => {
     console.log("Socket Connected");
+    
+    client.emit('ip', ip.address());
 
     client.on('openDoor', data => openDoor(data));
 
