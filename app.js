@@ -33,8 +33,6 @@ const closeDoor = (data) => {
 
 board.on("ready", () => {
 
-  console.log(ip.address());
-
   let button = new five.Button(2);
   led = new five.Led(13);
   // let servo = new five.Servo(7);
@@ -44,7 +42,7 @@ board.on("ready", () => {
     button: button
   });
 
-  button.on("down", function() {
+  button.on("down", () => {
     console.log("Puerta cerrada!!!");
   });
 
@@ -52,9 +50,13 @@ board.on("ready", () => {
   //   console.log("hold");
   // });
 
-  button.on("up", function() {
+  button.on("up", () => {
     if (!isOpenWihApp) {
       sendNotification();
+      io.sockets.emit('alert', {
+        isAlert: true,
+        message: "Open door without app!!!"
+      });
       console.log("Puerta abierta sin app!!!");
     } else {
       console.log("Puerta abierra con app!!!");
@@ -65,7 +67,7 @@ board.on("ready", () => {
     console.log("Socket Connected");
     
     client.emit('ip', ip.address());
-
+    
     client.on('openDoor', data => openDoor(data));
 
     client.on('closeDoor', data => closeDoor(data));

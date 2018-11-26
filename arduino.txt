@@ -11,3 +11,17 @@ negativo a  -> ground
 + a puerto didgital 9
 
 
+
+
+
+
+conectar un led normal
+el negativo al ground
+el positivo al 13
+
+button
+
+black analog port = 2 entre los dos una resistencia al ground
+red port 5V
+
+
