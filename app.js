@@ -1,65 +1,57 @@
+// Dependences
 const five = require("johnny-five");
 const http = require("http");
 const socket = require("socket.io");
 const ip = require('ip');
 
+// utils
 const { firebaseDatabase } = require('./utils/firebase');
-const { sendNotification } = require('./src/notifications/notifications');
+const Notifications = require('./src/notifications/notifications');
 
+// server
 const app = http.createServer().listen(8080);
 const io = socket.listen(app);
 
-let led;
 let board = new five.Board();
-
-// permite saber si la puerta es abierta pormedio de la app
+let servo, button;
 let isOpenWihApp = false;
+const idtemp = 'vTa7l8weaJfC17KMekYP6ereAY52';
 
-const openDoor = (data) => {
-  isOpenWihApp = true;
-  console.log({ data: data });
-  // servo.to(90);
-  // setTimeout(() => servo.to(0), 500);
-  led.on();
-  setTimeout(() => {
-    led.off();
-  }, 2000);
+const openDoor = ({ isOpen }) => {
+  isOpenWihApp = isOpen;
+  servo.to(90);
 }
 
-const closeDoor = (data) => {
-  console.log({ data: data });
-  isOpenWihApp = false;
+const closeDoor = ({ isOpen }) => {
+  isOpenWihApp = isOpen;
+  servo.to(0);
 }
 
 board.on("ready", () => {
 
-  let button = new five.Button(2);
-  led = new five.Led(13);
-  // let servo = new five.Servo(7);
-  // servo.to(0);
+  button = new five.Button(2);
+  servo = new five.Servo(9);
+  servo.to(0);
 
   board.repl.inject({
     button: button
   });
 
   button.on("down", () => {
-    console.log("Puerta cerrada!!!");
+    io.sockets.emit('closingDoor', {
+      isClosed: true
+    });
+    closeDoor({ isOpen: false });
   });
-
-  // button.on("hold", function() {
-  //   console.log("hold");
-  // });
 
   button.on("up", () => {
     if (!isOpenWihApp) {
-      sendNotification();
+      Notifications.sendNotification();
       io.sockets.emit('alert', {
-        isAlert: true,
-        message: "Open door without app!!!"
+        isAlert: true
       });
-      console.log("Puerta abierta sin app!!!");
     } else {
-      console.log("Puerta abierra con app!!!");
+      io.sockets.emit('isOpenNow', { isOpen: true });
     }
   });
 
@@ -68,9 +60,7 @@ board.on("ready", () => {
     
     client.emit('ip', ip.address());
     
-    client.on('openDoor', data => openDoor(data));
-
-    client.on('closeDoor', data => closeDoor(data));
+    client.on('openDoor', (data) => openDoor(data));
 
     client.on('disconnect', () => {
       console.log('User disconnected');
@@ -78,10 +68,9 @@ board.on("ready", () => {
 
   });
 
-  firebaseDatabase.ref(`home/vTa7l8weaJfC17KMekYP6ereAY52/door/`)
-    .on('value', (snapshot) => {
-      const { isOpen, data } = snapshot.val();
-      if (isOpen) return openDoor(data);
-    });
+  firebaseDatabase.ref(`home/${ idtemp }/door/`).on('value', (snapshot) => {
+    const { isOpen } = snapshot.val();
+    if (isOpen) return openDoor({ isOpen });
+  });
   
 });

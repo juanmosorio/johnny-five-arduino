@@ -1,19 +1,15 @@
 const firebase = require('firebase');
 
 const config = {
-  apiKey: "AIzaSyB_V2UdvvXyyQmIhAWQfDay8CNgZNjwm1k",
-  authDomain: "security-home-13121.firebaseapp.com",
-  databaseURL: "https://security-home-13121.firebaseio.com",
-  projectId: "security-home-13121",
-  storageBucket: "security-home-13121.appspot.com",
-  messagingSenderId: "602224877277"
-};
-
-// export const firebaseAuth = firebase.auth();
-// export const firebaseDatabase = firebase.database();
-// export default firebase;
+  apiKey: "AIzaSyAsLTCtA3Uw76oqGSyIbv1lZBi7CSRBva8",
+  authDomain: "securityhome-a47bf.firebaseapp.com",
+  databaseURL: "https://securityhome-a47bf.firebaseio.com",
+  projectId: "securityhome-a47bf",
+  storageBucket: "securityhome-a47bf.appspot.com",
+  messagingSenderId: "167482981498"
+}
 
 firebase.initializeApp(config);
 firebaseDatabase = firebase.database();
 
-module.exports = { firebaseDatabase, firebase };
+module.exports = { firebaseDatabase };
