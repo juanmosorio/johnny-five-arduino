@@ -22,7 +22,7 @@ firstNotification.postBody["excluded_segments"] = ["Banned Users"];
 firstNotification.postBody["data"] = {"abc": "123", "foo": "bar"};    
 // firstNotification.postBody["send_after"] = 'Thu Sep 24 2015 14:00:00 GMT-0700 (PDT)';  
 
-const sendNotification = () => {
+const sendFirstNotification = () => {
   // send this notification to All Users except Inactive ones    
   myClient.sendNotification(firstNotification, (err, httpResponse, data) => {
     if (err) {    
@@ -33,4 +33,33 @@ const sendNotification = () => {
   });   
 }
 
-module.exports = { sendNotification };
+const secondNotification = new OneSignal.Notification({    
+  contents: {    
+    en: `Alerta, se ha detectado que la puerta principal sigue abierta`,
+    tr: "Test mesajı"    
+  }    
+}); 
+
+// set target users    
+secondNotification.postBody["included_segments"] = ["Active Users"];    
+secondNotification.postBody["excluded_segments"] = ["Banned Users"];    
+// set notification parameters    
+secondNotification.postBody["data"] = {"abc": "123", "foo": "bar"};    
+// secondNotification.postBody["send_after"] = 'Thu Sep 24 2015 14:00:00 GMT-0700 (PDT)';  
+
+const sendSecondNotification = () => {
+  // send this notification to All Users except Inactive ones    
+  myClient.sendNotification(secondNotification, (err, httpResponse, data) => {
+    if (err) {    
+      console.log('Something went wrong...');    
+    } else {    
+      console.log(data, httpResponse.statusCode);    
+    }    
+  });   
+}
+
+
+module.exports = { 
+  sendFirstNotification,
+  sendSecondNotification
+};

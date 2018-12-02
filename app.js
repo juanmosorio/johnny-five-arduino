@@ -46,12 +46,19 @@ board.on("ready", () => {
 
   button.on("up", () => {
     if (!isOpenWihApp) {
-      Notifications.sendNotification();
+      Notifications.sendFirstNotification();
       io.sockets.emit('alert', {
         isAlert: true
       });
     } else {
       io.sockets.emit('isOpenNow', { isOpen: true });
+
+      setTimeout(() => {
+        if (isOpenWihApp) {
+          Notifications.sendSecondNotification();
+        }
+      }, 60000);
+      
     }
   });
 
